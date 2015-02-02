@@ -19,13 +19,21 @@ Hand::Hand(int portNumber): portCOM(portNumber,9600) {
 Hand::~Hand() {}
 
 void Hand::sendData() {
+    uint8_t packet[2];
+    // mutex lock
+    packet[0] = Hand::packet[0];
+    packet[1] = Hand::packet[1];
+    // mutex unlock
     portCOM.sendBlock(packet,2);
 }
 
 
 void Hand::setPacket(uint8_t finger, uint8_t state) {
-    packet[0] = 0x81 | finger;
+    finger = 0x81 | finger;
+    // mutex lock
+    packet[0] = finger;
     packet[1] = state;
+    //mutex unlock;
 }
 
 

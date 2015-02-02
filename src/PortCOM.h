@@ -5,8 +5,8 @@
  *      Author: Artur
  */
 
-#ifndef PORTCOM_H_
-#define PORTCOM_H_
+#ifndef HAND_H_
+#define HAND_H_
 
 #include <cstdint>
 

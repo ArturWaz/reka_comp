@@ -13,8 +13,11 @@
 class Hand {
 
     PortCOM portCOM;
-
     uint8_t packet[2];
+
+    std::thread readThread;
+
+    friend void readData(Hand*);
 
 public:
 
@@ -22,6 +25,7 @@ public:
     ~Hand();
 
     void sendData();
+    void readThreadedData();
 
     void setPacket(uint8_t finger, uint8_t state);
 

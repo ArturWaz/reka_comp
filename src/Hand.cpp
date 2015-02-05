@@ -6,6 +6,8 @@
  */
 
 
+#include <thread>
+#include <iostream>
 #include "Hand.h"
 #include "Config.h"
 
@@ -27,6 +29,20 @@ void Hand::sendData() {
     portCOM.sendBlock(packet,2);
 }
 
+void readData(Hand*hand){
+    while (true){
+        try {
+            uint8_t byte = hand->portCOM.readByte();
+            std::cout << "Read data: " << std::hex << byte << std::endl << std::dec;
+        } catch(bool e) {}
+    }
+}
+
+
+void Hand::readThreadedData() {
+    readThread = std::thread(readData,this);
+    readThread.detach();
+}
 
 void Hand::setPacket(uint8_t finger, uint8_t state) {
     finger = 0x81 | finger;

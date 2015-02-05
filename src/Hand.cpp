@@ -8,6 +8,7 @@
 
 #include <thread>
 #include <iostream>
+#include <bitset>
 #include "Hand.h"
 #include "Config.h"
 
@@ -33,7 +34,8 @@ void readData(Hand*hand){
     while (true){
         try {
             uint8_t byte = hand->portCOM.readByte();
-            std::cout << "Read data: " << std::hex << byte << std::endl << std::dec;
+            std::bitset<8> x(byte);
+            std::cout << "Read data: " << x << std::endl;
         } catch(bool e) {}
     }
 }

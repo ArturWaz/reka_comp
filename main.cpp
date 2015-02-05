@@ -27,8 +27,9 @@ void threadTest(int nb){
 
 int main(){
 
-    Hand hand(16);
+    Hand hand(6);
 
+    cout<<"Command (finger,state): ";
     hand.readThreadedData();
     while(readControl(hand));
 
@@ -36,7 +37,7 @@ int main(){
 }
 
 bool readControl(Hand&hand){
-    cout<<"Command (finger,state): ";
+    //cout<<"Command (finger,state): ";
     char finger, state;
     cin>>finger;
     if (finger == 'q') return false;
@@ -71,6 +72,9 @@ bool readControl(Hand&hand){
         case 'h':
             if (state == 'o') hand.openHand();
             else if(state == 'c') hand.closeHand();
+            break;
+        default:
+            return true;
     }
     hand.sendData();
     return true;

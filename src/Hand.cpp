@@ -27,7 +27,8 @@ void Hand::sendData() {
     packet[0] = Hand::packet[0];
     packet[1] = Hand::packet[1];
     // mutex unlock
-    portCOM.sendBlock(packet,2);
+    //portCOM.sendBlock(packet,2);
+    portCOM.sendByte(Hand::packet[0]); portCOM.sendByte(Hand::packet[1]);
 }
 
 void readData(Hand*hand){

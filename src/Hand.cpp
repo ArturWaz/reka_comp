@@ -31,7 +31,7 @@ void Hand::sendData() {
     portCOM.sendByte(Hand::packet[0]); portCOM.sendByte(Hand::packet[1]);
 }
 
-void readData(Hand*hand){
+void readData(Hand*hand){ // todo
     while (true){
         try {
             uint8_t byte = hand->portCOM.readByte();
@@ -83,3 +83,5 @@ void Hand::thumbClose() { setPacket(1<< THUMB_OC, CLOSE); }
 void Hand::thumbLeft() { setPacket(1<<THUMB_LRM, LEFT); }
 void Hand::thumbRight() { setPacket(1<<THUMB_LRM, RIGHT); }
 void Hand::thumbMid() { setPacket(1<<THUMB_LRM, MIDDLE); }
+
+void Hand::turnOffMotors() { setPacket(0x81,0x81); }

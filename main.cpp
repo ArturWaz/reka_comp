@@ -9,21 +9,19 @@
 #include <iostream>
 #include <thread>
 #include <Hand.h>
-
-#include "PortCOM.h"
 #include "DefineFunctions.h"
 
 using namespace std;
 
 bool readControl(Hand&hand);
 
-void threadTest(int nb){
-    long i = 0;
-    while(true){
-        std::cout << "Thread: " << nb << ", is working, iter: " << i++ << std::endl;
-        SLEEP_MS(1000);
-    }
-}
+//void threadTest(int nb){
+//    long i = 0;
+//    while(true){
+//        std::cout << "Thread: " << nb << ", is working, iter: " << i++ << std::endl;
+//        SLEEP_MS(1000);
+//    }
+//}
 
 int main(){
 
@@ -72,6 +70,9 @@ bool readControl(Hand&hand){
         case 'h':
             if (state == 'o') hand.openHand();
             else if(state == 'c') hand.closeHand();
+            break;
+        case 'T':
+            if (state == 'o') hand.turnOffMotors();
             break;
         default:
             return true;

@@ -29,6 +29,8 @@ public:
 
     void setPacket(uint8_t finger, uint8_t state);
 
+    void turnOffMotors();
+
     void openHand();
     void closeHand();
 

@@ -11,9 +11,10 @@
 #include <bitset>
 #include "Hand.h"
 #include "Config.h"
+#include "DefineFunctions.h"
 
 
-Hand::Hand(int portNumber): portCOM(portNumber,9600) {
+Hand::Hand(int portNumber): portCOM(portNumber,9600), ifContinuous(false) {
     portCOM.open();
     packet[0] = 0x0F;
     packet[1] = 0xF0;
@@ -22,37 +23,62 @@ Hand::Hand(int portNumber): portCOM(portNumber,9600) {
 Hand::~Hand() {}
 
 void Hand::sendData() {
+    if (ifContinuous) return;
     uint8_t packet[2];
     // mutex lock
     packet[0] = Hand::packet[0];
     packet[1] = Hand::packet[1];
     // mutex unlock
     //portCOM.sendBlock(packet,2);
-    portCOM.sendByte(Hand::packet[0]); portCOM.sendByte(Hand::packet[1]);
+    portCOM.sendByte(packet[0]); portCOM.sendByte(packet[1]);
 }
 
-void readData(Hand*hand){ // todo
+void dataSender(Hand *hand){ // todo
+    uint8_t packet[2];
+    uint8_t finger, state;
     while (true){
         try {
-            uint8_t byte = hand->portCOM.readByte();
-            std::bitset<8> x(byte);
-            std::cout << "Read data: " << x << std::endl;
+            hand->mtx.lock();
+            packet[0] = hand->packet[0];
+            packet[1] = hand->packet[1];
+            hand->mtx.unlock();
+
+            hand->portCOM.sendByte(packet[0]);
+            hand->portCOM.sendByte(packet[1]);
+
+
+            finger = hand->portCOM.readByte();
+            state = hand->portCOM.readByte();
+
+            std::bitset<8> x(finger);
+            std::bitset<8> y(state);
+
+//            std::cout << "finger: " << x << ", state: " << y << std::endl;
+
+            if (finger != packet[0] && state != packet[1]){
+//                ERROR_COM(hand->portCOM.getPortNumber(), "Bad feedback packet.");
+                SLEEP_MS(10);
+                continue;
+            }
+
+            SLEEP_MS(100);
         } catch(bool e) {}
     }
 }
 
 
-void Hand::readThreadedData() {
-    readThread = std::thread(readData,this);
-    readThread.detach();
+void Hand::continuousDataTransmitter() {
+    ifContinuous = true;
+    continuousDataSender = std::thread(dataSender, this);
+    continuousDataSender.detach();
 }
 
 void Hand::setPacket(uint8_t finger, uint8_t state) {
     finger = 0x81 | finger;
-    // mutex lock
+    mtx.lock();
     packet[0] = finger;
     packet[1] = state;
-    //mutex unlock;
+    mtx.unlock();
 }
 
 

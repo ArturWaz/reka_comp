@@ -28,7 +28,7 @@ int main(){
     Hand hand(6);
 
     cout<<"Command (finger,state): ";
-    hand.readThreadedData();
+    hand.continuousDataTransmitter();
     while(readControl(hand));
 
     return 0;

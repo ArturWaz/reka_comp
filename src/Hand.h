@@ -8,6 +8,7 @@
 #ifndef HAND_H_
 #define HAND_H_
 
+#include <mutex>
 #include "PortCOM.h"
 
 class Hand {
@@ -15,9 +16,11 @@ class Hand {
     PortCOM portCOM;
     uint8_t packet[2];
 
-    std::thread readThread;
+    std::thread continuousDataSender;
+    std::mutex mtx;
+    bool ifContinuous;
 
-    friend void readData(Hand*);
+    friend void dataSender(Hand *);
 
 public:
 
@@ -25,7 +28,7 @@ public:
     ~Hand();
 
     void sendData();
-    void readThreadedData();
+    void continuousDataTransmitter(); // with testing of read data
 
     void setPacket(uint8_t finger, uint8_t state);
 

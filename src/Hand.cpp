@@ -33,7 +33,7 @@ void Hand::sendData() {
     portCOM.sendByte(packet[0]); portCOM.sendByte(packet[1]);
 }
 
-void dataSender(Hand *hand){ // todo
+void dataSender(Hand *hand){
     uint8_t packet[2];
     uint8_t finger, state;
     while (true){

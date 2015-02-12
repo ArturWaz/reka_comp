@@ -7,7 +7,9 @@
 
 
 #include <iostream>
-#include <thread>
+#include <Socket.h>
+#include <map>
+#include <sstream>
 #include "Hand.h"
 
 using namespace std;
@@ -20,11 +22,31 @@ bool readControl(Hand&hand);
 
 int main(){
 
-    Hand hand(6,10000);
+    int userID;
 
-    cout<<"Command (finger,state): \n";
-    hand.continuousDataTransmitter();
-    while(readControl(hand));
+
+    std::string receiverHost = "localhost";
+    int startSendPort = 6868;
+    SocketClient socket(receiverHost, startSendPort, UDP);
+
+
+
+    std::ostringstream os;
+
+    int actionType	= 0;
+    float				actionPower = 0.65;
+    const float 		timestamp 	= 3.454;
+
+    os << static_cast<int>(actionType) << "," << static_cast<int>(actionPower*100.0f);
+
+
+    while (true) socket.SendBytes(os.str());
+
+
+//    Hand hand(6,10000);
+//    cout<<"Command (finger,state): \n";
+//    hand.continuousDataTransmitter();
+//    while(readControl(hand));
 
     return 0;
 }

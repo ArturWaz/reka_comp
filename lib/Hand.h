@@ -9,6 +9,7 @@
 #define HAND_H_
 
 #include <mutex>
+#include <thread>
 #include "PortCOM.h"
 
 class Hand {

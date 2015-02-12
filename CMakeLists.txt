@@ -1,21 +1,28 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
 
-SET( PROJ_NAME      "bulbulator" )
-SET( PROJ_PATH      ${CMAKE_SOURCE_DIR} )
-SET( PROJ_OUT_PATH  ${CMAKE_BINARY_DIR} )
-SET( PROJ_LIBRARIES "" )
-SET( PROJ_INCLUDES  "src" "lib" )
 
-FILE( GLOB_RECURSE PROJ_HEADERS src/*.h lib/*.h )
-FILE( GLOB_RECURSE PROJ_SOURCES main.cpp src/*.cpp lib/*.cpp lib/*.c )
+# Section for project specific settings
 
-PROJECT( ${PROJ_NAME} )
+SET(               PROJ_NAME          "hand" )
+SET(               PROJ_LIBRARIES     "Ws2_32" )
+SET(               PROJ_INCLUDES      "src" "lib" "lib/com" "lib/emotiv" )
+FILE( GLOB_RECURSE PROJ_HEADERS        src/*.h lib/*.h lib/emotiv/*.h lib/com/*.h )
+FILE( GLOB_RECURSE PROJ_SOURCES        main.cpp src/*.cpp lib/*.cpp lib/com/*.c lib/com/*.cpp )
+
+# End of special section
+
 
 SET( CMAKE_CXX_FLAGS "-std=c++11" )
-
 IF ( UNIX )
     SET( CMAKE_CXX_FLAGS "-pthread ${CMAKE_CXX_FLAGS}" )
 ENDIF ( UNIX )
+
+
+
+
+SET( PROJ_PATH      ${CMAKE_SOURCE_DIR} )
+SET( PROJ_OUT_PATH  ${CMAKE_BINARY_DIR} )
+PROJECT( ${PROJ_NAME} )
 
 INCLUDE_DIRECTORIES( ${PROJ_INCLUDES} )
 ADD_EXECUTABLE( ${PROJ_NAME} ${PROJ_SOURCES} )

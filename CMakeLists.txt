@@ -7,7 +7,7 @@ SET( PROJ_LIBRARIES "" )
 SET( PROJ_INCLUDES  "src" "lib" )
 
 FILE( GLOB_RECURSE PROJ_HEADERS src/*.h lib/*.h )
-FILE( GLOB_RECURSE PROJ_SOURCES main.cpp src/*.cpp lib/*.c )
+FILE( GLOB_RECURSE PROJ_SOURCES main.cpp src/*.cpp lib/*.cpp lib/*.c )
 
 PROJECT( ${PROJ_NAME} )
 

@@ -10,6 +10,7 @@
 #include <Socket.h>
 #include <map>
 #include <sstream>
+#include "EmotivEpocEngine.h"
 #include "Hand.h"
 
 using namespace std;
@@ -17,30 +18,32 @@ using namespace std;
 bool readControl(Hand&hand);
 
 
-
+void test(EmotivEpocEngine &em){
+    return;
+}
 
 
 int main(){
 
-    int userID;
 
-
-    std::string receiverHost = "localhost";
-    int startSendPort = 6868;
-    SocketClient socket(receiverHost, startSendPort, UDP);
+    EmotivEpocEngine emotivEpocController(0.0f);
 
 
 
-    std::ostringstream os;
-
-    int actionType	= 0;
-    float				actionPower = 0.65;
-    const float 		timestamp 	= 3.454;
-
-    os << static_cast<int>(actionType) << "," << static_cast<int>(actionPower*100.0f);
 
 
-    while (true) socket.SendBytes(os.str());
+
+//    std::string receiverHost = "localhost";
+//    int startSendPort = 6868;
+//    SocketClient socket(receiverHost, startSendPort, UDP);
+//    std::ostringstream os;
+//    int actionType	= 0;
+//    float				actionPower = 0.65;
+//    const float 		timestamp 	= 3.454;
+//    os << static_cast<int>(actionType) << "," << static_cast<int>(actionPower*100.0f);
+//    while (true) socket.SendBytes(os.str());
+
+
 
 
 //    Hand hand(6,10000);

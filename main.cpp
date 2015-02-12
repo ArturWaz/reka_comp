@@ -9,7 +9,6 @@
 #include <iostream>
 #include <thread>
 #include <Hand.h>
-#include "DefineFunctions.h"
 
 using namespace std;
 

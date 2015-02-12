@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <thread>
-#include <Hand.h>
+#include "Hand.h"
 
 using namespace std;
 

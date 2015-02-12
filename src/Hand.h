@@ -19,12 +19,15 @@ class Hand {
     std::thread continuousDataSender;
     std::mutex mtx;
     bool ifContinuous;
+    bool ifChanged;
+
+    const uint64_t turnOffTime; // [ms] time after the motors will be turned off
 
     friend void dataSender(Hand *);
 
 public:
 
-    Hand(int portNumber);
+    Hand(int portNumber, uint64_t turnOffTime);
     ~Hand();
 
     void sendData();

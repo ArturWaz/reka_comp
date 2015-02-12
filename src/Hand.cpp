@@ -14,7 +14,7 @@
 #include "DefineFunctions.h"
 
 
-Hand::Hand(int portNumber): portCOM(portNumber,9600), ifContinuous(false) {
+Hand::Hand(int portNumber, uint64_t turnOffTime): portCOM(portNumber,9600), ifContinuous(false), ifChanged(true), turnOffTime(turnOffTime) {
     portCOM.open();
     packet[0] = 0x0F;
     packet[1] = 0xF0;
@@ -36,11 +36,16 @@ void Hand::sendData() {
 void dataSender(Hand *hand){
     uint8_t packet[2];
     uint8_t finger, state;
+    uint64_t approxTime = 0;
     while (true){
         try {
             hand->mtx.lock();
-            packet[0] = hand->packet[0];
-            packet[1] = hand->packet[1];
+            if (hand->ifChanged) {
+                packet[0] = hand->packet[0];
+                packet[1] = hand->packet[1];
+                approxTime = 0;
+                hand->ifChanged = false;
+            }
             hand->mtx.unlock();
 
             hand->portCOM.sendByte(packet[0]);
@@ -50,9 +55,8 @@ void dataSender(Hand *hand){
             finger = hand->portCOM.readByte();
             state = hand->portCOM.readByte();
 
-            std::bitset<8> x(finger);
-            std::bitset<8> y(state);
-
+//            std::bitset<8> x(finger);
+//            std::bitset<8> y(state);
 //            std::cout << "finger: " << x << ", state: " << y << std::endl;
 
             if (finger != packet[0] && state != packet[1]){
@@ -61,6 +65,13 @@ void dataSender(Hand *hand){
                 continue;
             }
 
+
+            if (approxTime > hand->turnOffTime){
+                packet[0] = 0x81;
+                packet[1] = 0x81;
+            }
+
+            approxTime += 100;
             SLEEP_MS(100);
         } catch(bool e) {}
     }
@@ -78,6 +89,7 @@ void Hand::setPacket(uint8_t finger, uint8_t state) {
     mtx.lock();
     packet[0] = finger;
     packet[1] = state;
+    ifChanged = true;
     mtx.unlock();
 }
 

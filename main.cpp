@@ -25,7 +25,7 @@ bool readControl(Hand&hand);
 
 int main(){
 
-    Hand hand(6);
+    Hand hand(6,10000);
 
     cout<<"Command (finger,state): \n";
     hand.continuousDataTransmitter();

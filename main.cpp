@@ -14,6 +14,10 @@ using namespace std;
 
 bool readControl(Hand&hand);
 
+
+
+
+
 int main(){
 
     Hand hand(6,10000);

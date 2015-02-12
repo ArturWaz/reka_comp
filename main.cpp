@@ -14,14 +14,6 @@ using namespace std;
 
 bool readControl(Hand&hand);
 
-//void threadTest(int nb){
-//    long i = 0;
-//    while(true){
-//        std::cout << "Thread: " << nb << ", is working, iter: " << i++ << std::endl;
-//        SLEEP_MS(1000);
-//    }
-//}
-
 int main(){
 
     Hand hand(6,10000);
@@ -34,13 +26,10 @@ int main(){
 }
 
 bool readControl(Hand&hand){
-    //cout<<"Command (finger,state): ";
     char finger, state;
     cin>>finger;
     if (finger == 'q') return false;
     cin>>state;
-
-    //cout<<finger<<" "<<state<<endl;
 
     switch (finger){
         case 't': // thumb

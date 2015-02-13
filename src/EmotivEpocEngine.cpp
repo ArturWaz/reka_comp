@@ -82,11 +82,11 @@ void EmotivEpocEngine::getNextEvent() {
     return;
 }
 
-bool EmotivEpocEngine::dataAcqusitionEnable(int userID) {
+bool EmotivEpocEngine::dataAcqusitionEnable(unsigned int userID) {
     return EE_DataAcquisitionEnable(userID,true) == EDK_OK;
 }
 
-bool EmotivEpocEngine::dataAcqusitionDisable(int userID) {
+bool EmotivEpocEngine::dataAcqusitionDisable(unsigned int userID) {
     return EE_DataAcquisitionEnable(userID,false) == EDK_OK;
 }
 
@@ -111,7 +111,7 @@ void DataPacket::writeDataToStream(std::ostream &ostream1) {
     }
 }
 
-DataPacket *EmotivEpocEngine::takeSamplesFromBuffer(const int userID) {
+DataPacket *EmotivEpocEngine::takeSamplesFromBuffer(const unsigned int userID) {
     if (!data) return NULL;
 
     bool dataAcquisitionEnabled;
@@ -139,24 +139,24 @@ DataPacket *EmotivEpocEngine::takeSamplesFromBuffer(const int userID) {
     return packet;
 }
 
-bool EmotivEpocEngine::loadUserProfile(int userID, const char *filename) {
+bool EmotivEpocEngine::loadUserProfile(unsigned int userID, const char *filename) {
     return EE_LoadUserProfile(userID, filename) == EDK_OK;
 }
 
-bool EmotivEpocEngine::saveUserProfile(int userID, const char *filename) {
+bool EmotivEpocEngine::saveUserProfile(unsigned int userID, const char *filename) {
     return EE_LoadUserProfile(userID, filename) == EDK_OK;
 }
 
-void EmotivEpocEngine::userAddedEvent(const int userID) { std::cout<<"Added user: "<<userID<<std::endl; }
+void EmotivEpocEngine::userAddedEvent(const unsigned int userID) { std::cout<<"Added user: "<<userID<<std::endl; }
 
-void EmotivEpocEngine::userRemovedEvent(const int userID) { std::cout<<"Removed user: "<<userID<<std::endl; }
+void EmotivEpocEngine::userRemovedEvent(const unsigned int userID) { std::cout<<"Removed user: "<<userID<<std::endl; }
 
 
-void EmotivEpocEngine::cognitivActionEvent(const int userID, EpocCognitivAction actionType, float actionPower, float time) {
+void EmotivEpocEngine::cognitivActionEvent(const unsigned int userID, EpocCognitivAction actionType, float actionPower, float time) {
     std::cout<<"Action user: "<<userID<<", action type: "<<int(actionType)<<", action power: "<<actionPower*100.0f<<"."<<std::endl;
 }
 
 
-void EmotivEpocEngine::cognitivControllerEvent(const int userID, EpocCognitivEvent eventType) {
+void EmotivEpocEngine::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {
     std::cout<<"Cognitiv event user: "<<userID<<", cognitiv event type: "<<int(eventType)<<"."<<std::endl;
 }

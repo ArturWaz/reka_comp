@@ -82,22 +82,22 @@ public:
     EmotivEpocEngine(const char*IPaddress, int port, float bufferSize);
     ~EmotivEpocEngine();
 
-    bool loadUserProfile(int userID, const char*filename);
-    bool saveUserProfile(int userID, const char*filename);
+    bool loadUserProfile(unsigned int userID, const char*filename);
+    bool saveUserProfile(unsigned int userID, const char*filename);
 
     inline float getBufferSize() { return bufferSize; }
-    bool dataAcqusitionEnable(int userID);
-    bool dataAcqusitionDisable(int userID);
-    DataPacket *takeSamplesFromBuffer(const int userID); // return NULL if the packet was not read
+    bool dataAcqusitionEnable(unsigned int userID);
+    bool dataAcqusitionDisable(unsigned int userID);
+    DataPacket *takeSamplesFromBuffer(const unsigned int userID); // return NULL if the packet was not read
 
 
 
     void getNextEvent();
 
-    virtual void userAddedEvent(const int userID);
-    virtual void userRemovedEvent(const int userID);
-    virtual void cognitivActionEvent(const int userID, EpocCognitivAction actionType, float actionPower, float time);
-    virtual void cognitivControllerEvent(const int userID, EpocCognitivEvent eventType);
+    virtual void userAddedEvent(const unsigned int userID);
+    virtual void userRemovedEvent(const unsigned int userID);
+    virtual void cognitivActionEvent(const unsigned int userID, EpocCognitivAction actionType, float actionPower, float time);
+    virtual void cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType);
 
 };
 

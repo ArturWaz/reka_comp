@@ -8,10 +8,10 @@
 #ifndef EmotivEpocEngine_H_
 #define EmotivEpocEngine_H_
 
+#include <ostream>
 
 
-
-enum CognitivAction {
+enum EpocCognitivAction {
     ACTION_NEUTRAL				    = 0x0001,
     ACTION_PUSH						= 0x0002,
     ACTION_PULL						= 0x0004,
@@ -28,13 +28,41 @@ enum CognitivAction {
     ACTION_DISAPPEAR				= 0x2000
 };
 
-enum CognitivEvent {
+enum EpocCognitivEvent {
     CognitivNoEvent = 0, CognitivTrainingStarted, CognitivTrainingSucceeded,
     CognitivTrainingFailed, CognitivTrainingCompleted, CognitivTrainingDataErased,
     CognitivTrainingRejected, CognitivTrainingReset,
     CognitivAutoSamplingNeutralCompleted, CognitivSignatureUpdated
 };
 
+
+enum EpocDataChannel {
+    COUNTER = 0, INTERPOLATED, RAW_CQ,
+    AF3, F7, F3, FC5, T7,
+    P7, O1, O2, P8, T8,
+    FC6, F4, F8, AF4, GYROX,
+    GYROY, TIMESTAMP, ES_TIMESTAMP, FUNC_ID, FUNC_VALUE, MARKER,
+    SYNC_SIGNAL
+};
+
+
+
+class DataPacket {
+
+    double *packet[25];
+    unsigned int nSamples;
+
+public:
+
+    DataPacket(int numberOfSamples);
+    ~DataPacket();
+
+    inline unsigned int numberOfSamples() { return nSamples; }
+    inline const double&operator()(EpocDataChannel channel, int sampleNumber) const { return packet[channel][sampleNumber]; }
+    inline double **pointer(){ return packet; }
+
+    void writeDataToStream(std::ostream&);
+};
 
 
 class EmotivEpocEngine {
@@ -48,36 +76,29 @@ class EmotivEpocEngine {
     void init(const char*address, int port);
     EmotivEpocEngine(EmotivEpocEngine &){}
 
-protected:
-
-    inline float getBufferSize() { return bufferSize; }
-
 public:
 
     EmotivEpocEngine(float bufferSize); // if bufferSize is 0.0f, then data wont be collected
     EmotivEpocEngine(const char*IPaddress, int port, float bufferSize);
     ~EmotivEpocEngine();
 
+    bool loadUserProfile(int userID, const char*filename);
+    bool saveUserProfile(int userID, const char*filename);
+
+    inline float getBufferSize() { return bufferSize; }
+    bool dataAcqusitionEnable(int userID);
+    bool dataAcqusitionDisable(int userID);
+    DataPacket *takeSamplesFromBuffer(const int userID); // return NULL if the packet was not read
+
+
+
     void getNextEvent();
 
-    virtual void userAdded(const int userID){}
-    virtual void userRemoved(const int userID){}
-    virtual void cognitivAction(const int userID, CognitivAction actionType, float actionPower, float time){}
-    virtual void cognitivEvent(const int userID, CognitivEvent eventType){}
+    virtual void userAddedEvent(const int userID);
+    virtual void userRemovedEvent(const int userID);
+    virtual void cognitivActionEvent(const int userID, EpocCognitivAction actionType, float actionPower, float time);
+    virtual void cognitivControllerEvent(const int userID, EpocCognitivEvent eventType);
 
-    void takeSamplesFromBuffer(const int userID){
-        if (bufferSize == 0.0f) return;
-        if (EE_DataUpdateHandle(0, data) != EDK_OK) return;
-        unsigned int numberOfSamplesTaken = 0;
-        if (EE_DataGetNumberOfSample(data,&numberOfSamplesTaken) != EDK_OK) return;
-        if (numberOfSamplesTaken) return;
-
-        double **data = new double*[numberOfSamplesTaken];
-        for (int i = 0; i < 0; ++i)
-            data[i] = new double[0];
-//        EE_DataGetMultiChannels(EmotivEpocEngine::data, EE_DataChannel_t channels[], unsigned int nChannels, data, numberOfSamplesTaken);
-
-    }
 };
 
 

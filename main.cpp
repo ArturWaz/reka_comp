@@ -10,6 +10,8 @@
 #include <Socket.h>
 #include <map>
 #include <sstream>
+#include <DefineFunctions.h>
+#include <EmotivEpocController.h>
 #include "EmotivEpocEngine.h"
 #include "Hand.h"
 
@@ -18,15 +20,35 @@ using namespace std;
 bool readControl(Hand&hand);
 
 
-void test(EmotivEpocEngine &em){
-    return;
-}
 
 
 int main(){
 
 
-    EmotivEpocEngine emotivEpocController(0.0f);
+
+
+    try {
+        EmotivEpocController emotivEpocController(1.0f);
+
+
+
+
+        int j = 0;
+        for(int i = 0; i < 10000; ++i) {
+            SLEEP_MS(1);
+            emotivEpocController.getNextEvent();
+//            emotivEpocController.dataAcqusitionEnable(0);
+//            if (j > 50) {
+//                emotivEpocController.takeSamplesFromBuffer(0);
+//                j = 0;
+//            }
+//            ++j;
+        }
+
+    } catch(const char*e) {
+        std::cerr << "\nERROR: " << e << std::endl;
+        std::exit(-1);
+    }
 
 
 

@@ -108,36 +108,40 @@ void EmotivEpocController::turnOnThtreadedRecorder() {
 
 void EmotivEpocController::startRecordUser(unsigned int userID) { // todo finish !!!
 
-
+    // GENERATE FILE NAME
     std::map<unsigned int, User>::iterator iter = user.find(userID);
     time_t rawtime;
     struct tm * timeinfo;
     char buffer [80];
     time (&rawtime);
     timeinfo = localtime(&rawtime);
-    strftime (buffer,80,"_%F_%H-%M-%S_EEG.csv",timeinfo);
+    strftime (buffer,80,"_%F_%H-%M-%S",timeinfo);
 
     std::string filename(EmotivEpocController_fileName);
     filename += string(buffer);
 
+    // TURN ON COG RECORDER
+    // todo open file
 
+    // TURN ON EEG RECORDER
     EmotivEpocController_recordDataMutex.lock();
     EmotivEpocController_userID = userID;
     if (EmotivEpocController_fileName) delete []EmotivEpocController_fileName;
     EmotivEpocController_fileName = new char[strlen(       )+1];
     strcpy(EmotivEpocController_fileName,        );
     EmotivEpocController_recordDataMutex.unlock();
-
-
 }
 
 void EmotivEpocController::stopRecording() {
+
+    // TURN OFF COG RECORDER
+    // todo close file
+
+    // TURN OFF EEG RECORDER
     EmotivEpocController_recordDataMutex.lock();
     EmotivEpocController_userID = INFINITE;
     if (EmotivEpocController_fileName) delete []EmotivEpocController_fileName;
     EmotivEpocController_fileName = NULL;
     EmotivEpocController_recordDataMutex.unlock();
-
-
 }
 

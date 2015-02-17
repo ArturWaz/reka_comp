@@ -29,10 +29,10 @@ enum EpocCognitivAction {
 };
 
 enum EpocCognitivEvent {
-    CognitivNoEvent = 0, CognitivTrainingStarted, CognitivTrainingSucceeded,
-    CognitivTrainingFailed, CognitivTrainingCompleted, CognitivTrainingDataErased,
-    CognitivTrainingRejected, CognitivTrainingReset,
-    CognitivAutoSamplingNeutralCompleted, CognitivSignatureUpdated
+    COGNITIV_NO_EVENT = 0, COGNITIV_TRAINING_STARTED, COGNITIV_TRAINING_SUCCEEDED,
+    COGNITIV_TRAINING_FAILED, COGNITIV_TRAINING_COMPLETED, COGNITIV_TRAINING_DATA_ERASED,
+    COGNITIV_TRAINING_REJECTED, COGNITIV_TRAINING_RESET,
+    COGNITIV_AUTOSAMPLING_NEUTRAL_COMPLETED, COGNITIV_SIGNATURE_UPDATED
 };
 
 
@@ -75,12 +75,7 @@ class EmotivEpocEngine {
 
     void init(const char*address, int port);
     EmotivEpocEngine(EmotivEpocEngine &){}
-
-protected:
-
-    bool dataAcqusitionEnable(unsigned int userID);
-    bool dataAcqusitionDisable(unsigned int userID);
-    DataPacket *takeSamplesFromBuffer(const unsigned int userID); // return NULL if the packet was not read
+    void operator=(EmotivEpocEngine&){}
 
 public:
 
@@ -88,17 +83,35 @@ public:
     EmotivEpocEngine(const char*IPaddress, int port, float bufferSize);
     ~EmotivEpocEngine();
 
+
+    // PROFILE MANAGEMENT
     bool loadUserProfile(unsigned int userID, const char*filename);
     bool saveUserProfile(unsigned int userID, const char*filename);
 
+
+    // RAW EEG READING
     inline float getBufferSize() { return bufferSize; }
+    bool dataAcqusitionEnable(unsigned int userID);
+    bool dataAcqusitionDisable(unsigned int userID);
+    DataPacket *takeSamplesFromBuffer(const unsigned int userID); // return NULL if the packet was not read
 
+
+    // EVENT ACQUISITION
     void getNextEvent();
-
     virtual void userAddedEvent(const unsigned int userID);
     virtual void userRemovedEvent(const unsigned int userID);
     virtual void cognitivActionEvent(const unsigned int userID, EpocCognitivAction actionType, float actionPower, float time);
     virtual void cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType);
+
+
+    // COGNITIV CONTROL
+    bool setCognitivActions(unsigned int userID, unsigned long actions);
+    bool setCognitivActions(unsigned int userID, EpocCognitivAction *actions, unsigned int numberOfActions);
+    bool setCurrentAction(unsigned int userID, EpocCognitivAction action);
+    bool currentActionEraseData(unsigned int userID);
+    bool currentActionTrainingStart(unsigned int userID);
+    bool currentActionTrainingAccept(unsigned int userID);
+    bool currentActionTrainingReject(unsigned int userID);
 
 };
 

@@ -160,3 +160,32 @@ void EmotivEpocEngine::cognitivActionEvent(const unsigned int userID, EpocCognit
 void EmotivEpocEngine::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {
     std::cout<<"Cognitiv event users: "<<userID<<", cognitiv event type: "<<int(eventType)<<"."<<std::endl;
 }
+
+bool EmotivEpocEngine::setCognitivActions(unsigned int userID, unsigned long actions) { return EE_CognitivSetActiveActions(userID,actions) == EDK_OK; }
+
+bool EmotivEpocEngine::setCognitivActions(unsigned int userID, EpocCognitivAction *actions, unsigned int numberOfActions) {
+    unsigned long convertedActions = 0;
+    for (int i = 0; i < numberOfActions; ++i)
+        convertedActions |= (unsigned long)(actions[i]);
+    return EE_CognitivSetActiveActions(userID,convertedActions) == EDK_OK;
+}
+
+bool EmotivEpocEngine::setCurrentAction(unsigned int userID, EpocCognitivAction action) {
+    return EE_CognitivSetTrainingAction(userID, EE_CognitivAction_t(action)) == EDK_OK;
+}
+
+bool EmotivEpocEngine::currentActionEraseData(unsigned int userID) {
+    return EE_CognitivSetTrainingControl(userID, COG_ERASE) == EDK_OK;
+}
+
+bool EmotivEpocEngine::currentActionTrainingStart(unsigned int userID) {
+    return EE_CognitivSetTrainingControl(userID, COG_START) == EDK_OK;
+}
+
+bool EmotivEpocEngine::currentActionTrainingAccept(unsigned int userID) {
+    return EE_CognitivSetTrainingControl(userID, COG_ACCEPT) == EDK_OK;
+}
+
+bool EmotivEpocEngine::currentActionTrainingReject(unsigned int userID) {
+    return EE_CognitivSetTrainingControl(userID, COG_REJECT) == EDK_OK;
+}

@@ -28,23 +28,31 @@ int main(){
 
 
     try {
-        EmotivEpocController emotivEpocController(1.0f);
+        EmotivEpocController emotivEpocController(2.0f);
 
-
-
+        SLEEP_MS(10000);
 
         int j = 0;
         for(int i = 0; i < 10000; ++i) {
             SLEEP_MS(1);
             emotivEpocController.getNextEvent();
-//            emotivEpocController.dataAcqusitionEnable(0);
+            if (i == 100){
+//                emotivEpocController.setUserName(0,"artur");
+            }
+            if (i == 1000){
+                emotivEpocController.startRecordUser(0);
+            }
+
 //            if (j > 50) {
 //                emotivEpocController.takeSamplesFromBuffer(0);
 //                j = 0;
 //            }
 //            ++j;
+
         }
 
+
+        cout << "Closing thread...   " << emotivEpocController.stopRecording(0) << endl;
     } catch(const char*e) {
         std::cerr << "\nERROR: " << e << std::endl;
         std::exit(-1);

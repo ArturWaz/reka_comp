@@ -90,14 +90,14 @@ bool EmotivEpocEngine::dataAcqusitionDisable(unsigned int userID) {
     return EE_DataAcquisitionEnable(userID,false) == EDK_OK;
 }
 
-DataPacket::DataPacket(int numberOfSamples): nSamples(numberOfSamples) {
+DataPacket::DataPacket(unsigned int numberOfSamples): nSamples(numberOfSamples) {
     for (int i = 0; i < 25; ++i)
         packet[i] = new double[numberOfSamples];
 }
 
 DataPacket::~DataPacket() {
     for (int i = 0; i < 25; ++i) {
-        delete [](packet[i]);
+        free(packet[i]);
     }
 }
 
@@ -147,16 +147,16 @@ bool EmotivEpocEngine::saveUserProfile(unsigned int userID, const char *filename
     return EE_LoadUserProfile(userID, filename) == EDK_OK;
 }
 
-void EmotivEpocEngine::userAddedEvent(const unsigned int userID) { std::cout<<"Added user: "<<userID<<std::endl; }
+void EmotivEpocEngine::userAddedEvent(const unsigned int userID) { std::cout<<"Added users: "<<userID<<std::endl; }
 
-void EmotivEpocEngine::userRemovedEvent(const unsigned int userID) { std::cout<<"Removed user: "<<userID<<std::endl; }
+void EmotivEpocEngine::userRemovedEvent(const unsigned int userID) { std::cout<<"Removed users: "<<userID<<std::endl; }
 
 
 void EmotivEpocEngine::cognitivActionEvent(const unsigned int userID, EpocCognitivAction actionType, float actionPower, float time) {
-    std::cout<<"Action user: "<<userID<<", action type: "<<int(actionType)<<", action power: "<<actionPower*100.0f<<"."<<std::endl;
+    std::cout<<"Action users: "<<userID<<", action type: "<<int(actionType)<<", action power: "<<actionPower*100.0f<<"."<<std::endl;
 }
 
 
 void EmotivEpocEngine::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {
-    std::cout<<"Cognitiv event user: "<<userID<<", cognitiv event type: "<<int(eventType)<<"."<<std::endl;
+    std::cout<<"Cognitiv event users: "<<userID<<", cognitiv event type: "<<int(eventType)<<"."<<std::endl;
 }

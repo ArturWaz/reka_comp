@@ -54,11 +54,11 @@ class DataPacket {
 
 public:
 
-    DataPacket(int numberOfSamples);
+    DataPacket(unsigned int numberOfSamples);
     ~DataPacket();
 
     inline unsigned int numberOfSamples() { return nSamples; }
-    inline const double&operator()(EpocDataChannel channel, int sampleNumber) const { return packet[channel][sampleNumber]; }
+    inline const double&operator()(EpocDataChannel channel, unsigned int sampleNumber) const { return packet[channel][sampleNumber]; }
     inline double **pointer(){ return packet; }
 
     void writeDataToStream(std::ostream&);
@@ -76,6 +76,12 @@ class EmotivEpocEngine {
     void init(const char*address, int port);
     EmotivEpocEngine(EmotivEpocEngine &){}
 
+protected:
+
+    bool dataAcqusitionEnable(unsigned int userID);
+    bool dataAcqusitionDisable(unsigned int userID);
+    DataPacket *takeSamplesFromBuffer(const unsigned int userID); // return NULL if the packet was not read
+
 public:
 
     EmotivEpocEngine(float bufferSize); // if bufferSize is 0.0f, then data wont be collected
@@ -86,11 +92,6 @@ public:
     bool saveUserProfile(unsigned int userID, const char*filename);
 
     inline float getBufferSize() { return bufferSize; }
-    bool dataAcqusitionEnable(unsigned int userID);
-    bool dataAcqusitionDisable(unsigned int userID);
-    DataPacket *takeSamplesFromBuffer(const unsigned int userID); // return NULL if the packet was not read
-
-
 
     void getNextEvent();
 

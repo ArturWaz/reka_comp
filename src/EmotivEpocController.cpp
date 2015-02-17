@@ -3,45 +3,52 @@
 #include <cstring>
 #include <ctime>
 #include <DefineFunctions.h>
-#include <thread>
-#include <mutex>
+#include <iostream>
 
 
-EmotivEpocController::EmotivEpocController(float bufferSize): EmotivEpocEngine(bufferSize) {
+
+
+EmotivEpocController::EmotivEpocController(float bufferSize): EmotivEpocEngine(bufferSize), threadedReading(false) {
 
 }
 
 EmotivEpocController::~EmotivEpocController() {
-
+    if (threadedReading) {
+        outputCOGfile.close();
+        threadedReading = false;
+        recordData.join();
+    }
 }
 
 void EmotivEpocController::userAddedEvent(const unsigned int userID) {
 //    EmotivEpocEngine::userAddedEvent(userID);
-    user.insert(std::pair<unsigned int, User>(userID, User(20000+userID)));
+    users.insert(std::pair<unsigned int, User>(userID, User(userID)));
 }
 
 void EmotivEpocController::userRemovedEvent(const unsigned int userID) {
 //    EmotivEpocEngine::userRemovedEvent(userID);
-    std::map<unsigned int, User>::iterator iter = user.find(userID);
-    if (iter != user.end()) user.erase(iter);
+    std::map<unsigned int, User>::iterator iter = users.find(userID);
+    if (iter == users.end()) return;
+    if (iter != users.end()) users.erase(iter);
 }
 
 void EmotivEpocController::cognitivActionEvent(const unsigned int userID, EpocCognitivAction actionType, float actionPower, float time) {
 //    EmotivEpocEngine::cognitivActionEvent(userID, actionType, actionPower, time);
-    std::map<unsigned int, User>::iterator iter = user.find(userID);
-    if (iter->second.outputfile.is_open()){
-        iter->second.outputfile<<time<<','<<int(actionType)<<','<<actionPower<<std::endl;
+    std::map<unsigned int, User>::iterator iter = users.find(userID);
+    if (iter == users.end()) return;
+    if (outputCOGfile.is_open()){
+        outputCOGfile<<time<<','<<int(actionType)<<','<<actionPower<<std::endl;
     }
 }
 
 void EmotivEpocController::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {
-//    EmotivEpocEngine::cognitivControllerEvent(userID, eventType);
+    EmotivEpocEngine::cognitivControllerEvent(userID, eventType);
 }
 
-User::User(int port): SocketClient("localhost",port,UDP), username(NULL) {}
+User::User(unsigned int port): SocketClient("localhost",port+20000,UDP), username(NULL) {}
 
 User::~User() {
-    if (username) delete []username;
+    if (username) free(username);
 }
 
 void User::setName(const char *username) {
@@ -52,96 +59,101 @@ void User::setName(const char *username) {
 
 unsigned int EmotivEpocController::getUserID(const char *username) {
     if (!username) throw "Name has to be given.";
-    std::map<unsigned int, User>::iterator iter = user.begin();
-    while (iter != user.end()){
+    std::map<unsigned int, User>::iterator iter = users.begin();
+    while (iter != users.end()){
         if (strcmp(username,iter->second.getName())) return iter->first;
         ++iter;
     }
-    throw "There is no user with given name.";
+    throw "There is no users with given name.";
 }
 
 
 
 
 
-std::thread EmotivEpocController_recordData;
-std::mutex EmotivEpocController_recordDataMutex;
-unsigned int EmotivEpocController_userID = INFINITE;
-char *EmotivEpocController_fileName = NULL;
 
-void dataRecorder(EmotivEpocController *controller, float bufferSizeInSeconds) { // todo check if this working
-    bool changed = true;
+void dataRecorder(EmotivEpocController *controller, std::string fileName, float bufferSizeInSeconds, unsigned int userID) {
+    controller->EmotivEpocEngine::dataAcqusitionEnable(userID);
     std::ofstream outputStream;
     bufferSizeInSeconds *= 1000/2;
-    while(true){
+
+    outputStream.open(fileName, std::ofstream::trunc);
+    outputStream << "COUNTER,INTERPOLATED,RAW_CQ,AF3,F7,F3,FC5,T7,P7,O1,O2,P8,T8,FC6,F4,F8,AF4,GYROX,GYROY,TIMESTAMP,ES_TIMESTAMP,FUNC_ID,FUNC_VALUE,MARKER,SYNC_SIGNAL" << std::endl;
+
+    while(controller->threadedReading){
         SLEEP_MS(int(bufferSizeInSeconds));
-        EmotivEpocController_recordDataMutex.lock();
-        if (EmotivEpocController_userID == INFINITE){
-            changed = true;
-            if (outputStream.is_open()) outputStream.close();
-            continue;
-        }
-        EmotivEpocController_recordDataMutex.unlock();
 
-        if (changed){
-
-            outputStream.open(EmotivEpocController_fileName, std::ofstream::trunc);
-
-            outputStream << "COUNTER,INTERPOLATED,RAW_CQ,AF3,F7,F3,FC5,T7,P7,O1,O2,P8,T8,FC6,F4,F8,AF4,GYROX,GYROY,TIMESTAMP,ES_TIMESTAMP,FUNC_ID,FUNC_VALUE,MARKER,SYNC_SIGNAL" << std::endl;
-            changed = false;
-        }
-
-        DataPacket *dataPacket = controller->takeSamplesFromBuffer(EmotivEpocController_userID);
+        DataPacket *dataPacket = controller->EmotivEpocEngine::takeSamplesFromBuffer(userID);
+        if (dataPacket == NULL) continue;
 
         dataPacket->writeDataToStream(outputStream);
-
         delete dataPacket;
     }
+    controller->EmotivEpocEngine::dataAcqusitionDisable(userID);
+    outputStream.close();
 }
 
 
-void EmotivEpocController::turnOnThtreadedRecorder() {
-    if (getBufferSize() <= 0.0f) return;
-    EmotivEpocController_recordData = std::thread(dataRecorder, this);
-    EmotivEpocController_recordData.detach();
-}
 
-void EmotivEpocController::startRecordUser(unsigned int userID) { // todo finish !!!
+bool EmotivEpocController::startRecordUser(unsigned int userID) {
+    if (threadedReading) return false;
+
+    if (getBufferSize() <= 0.0f) return false;
 
     // GENERATE FILE NAME
-    std::map<unsigned int, User>::iterator iter = user.find(userID);
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer [80];
-    time (&rawtime);
-    timeinfo = localtime(&rawtime);
-    strftime (buffer,80,"_%F_%H-%M-%S",timeinfo);
+    std::map<unsigned int, User>::iterator iter = users.find(userID);
+    if (iter == users.end()) return false;
 
-    std::string filename(EmotivEpocController_fileName);
-    filename += string(buffer);
+
+
+    char filename[100] = "unnamedUser";
+    unsigned int filenameLength = 11;
+    if (iter->second.getName() != NULL) {
+        filenameLength = (int)strlen(iter->second.getName());
+        memcpy(filename, iter->second.getName(), filenameLength);
+    }
+
+    time_t rawtime;
+    time(&rawtime);
+    struct tm * timeinfo;
+    timeinfo = localtime(&rawtime);
+    std::strftime(&(filename[filenameLength]),100,"_%Y.%m.%d_%H.%M.%S_",timeinfo); // "_%F_%H-%M-%S"
+    filenameLength = strlen(filename);
+
 
     // TURN ON COG RECORDER
-    // todo open file
+    strcat(filename,"COG.csv");
+    outputCOGfile.open(filename, std::ofstream::trunc);
+    outputCOGfile << "TIME,ACTION,POWER\n";
 
     // TURN ON EEG RECORDER
-    EmotivEpocController_recordDataMutex.lock();
-    EmotivEpocController_userID = userID;
-    if (EmotivEpocController_fileName) delete []EmotivEpocController_fileName;
-    EmotivEpocController_fileName = new char[strlen(       )+1];
-    strcpy(EmotivEpocController_fileName,        );
-    EmotivEpocController_recordDataMutex.unlock();
+    strcpy(&(filename[filenameLength]),"EEG.csv");
+    threadedReading = true;
+    recordData = thread(dataRecorder,this,std::string(filename), getBufferSize(),iter->first);
+
+    return true;
 }
 
-void EmotivEpocController::stopRecording() {
+bool EmotivEpocController::stopRecording(unsigned int userID) {
+    if (!threadedReading) return false;
+
+    std::map<unsigned int, User>::iterator iter = users.find(userID);
+    if (iter == users.end()) return false;
 
     // TURN OFF COG RECORDER
-    // todo close file
+    outputCOGfile.close();
 
     // TURN OFF EEG RECORDER
-    EmotivEpocController_recordDataMutex.lock();
-    EmotivEpocController_userID = INFINITE;
-    if (EmotivEpocController_fileName) delete []EmotivEpocController_fileName;
-    EmotivEpocController_fileName = NULL;
-    EmotivEpocController_recordDataMutex.unlock();
+    threadedReading = false;
+    recordData.join();
+
+    return true;
 }
 
+bool EmotivEpocController::setUserName(unsigned int userID, const char *username) {
+    if (username == NULL) return false;
+    std::map<unsigned int, User>::iterator iter = users.find(userID);
+    if (iter == users.end()) return false;
+    iter->second.setName(username);
+    return true;
+}

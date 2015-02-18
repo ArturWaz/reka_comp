@@ -21,12 +21,12 @@ EmotivEpocController::~EmotivEpocController() {
 }
 
 void EmotivEpocController::userAddedEvent(const unsigned int userID) {
-    EmotivEpocEngine::userAddedEvent(userID);
+//    EmotivEpocEngine::userAddedEvent(userID);
     users.insert(std::pair<unsigned int, User>(userID, User(userID)));
 }
 
 void EmotivEpocController::userRemovedEvent(const unsigned int userID) {
-    EmotivEpocEngine::userRemovedEvent(userID);
+//    EmotivEpocEngine::userRemovedEvent(userID);
     std::map<unsigned int, User>::iterator iter = users.find(userID);
     if (iter == users.end()) return;
     if (iter != users.end()) users.erase(iter);
@@ -42,7 +42,7 @@ void EmotivEpocController::cognitivActionEvent(const unsigned int userID, EpocCo
 }
 
 void EmotivEpocController::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {
-    EmotivEpocEngine::cognitivControllerEvent(userID, eventType);
+//    EmotivEpocEngine::cognitivControllerEvent(userID, eventType);
 }
 
 User::User(unsigned int port): SocketClient("localhost",port+20000,UDP), username(NULL) {}

@@ -46,6 +46,7 @@ class EmotivEpocController: public EmotivEpocEngine {
     std::map<unsigned int, User> users;
 
     // only one user could be recorded
+    unsigned int userID; // id of the recorded user
     std::ofstream outputCOGfile;
     std::thread recordData;
     bool threadedReading; // marker, true if threaded reading is turn on

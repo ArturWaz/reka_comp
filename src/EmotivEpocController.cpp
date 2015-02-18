@@ -4,11 +4,10 @@
 #include <ctime>
 #include <DefineFunctions.h>
 #include <iostream>
+#include <sstream>
 
 
-
-
-EmotivEpocController::EmotivEpocController(float bufferSize): EmotivEpocEngine(bufferSize), threadedReading(false) {
+EmotivEpocController::EmotivEpocController(float bufferSize): EmotivEpocEngine(bufferSize), threadedReading(false), userID(INFINITE) {
 
 }
 
@@ -36,9 +35,13 @@ void EmotivEpocController::cognitivActionEvent(const unsigned int userID, EpocCo
 //    EmotivEpocEngine::cognitivActionEvent(userID, actionType, actionPower, time);
     std::map<unsigned int, User>::iterator iter = users.find(userID);
     if (iter == users.end()) return;
-    if (outputCOGfile.is_open()){
+    if (outputCOGfile.is_open() && userID == EmotivEpocController::userID){
         outputCOGfile<<time<<','<<int(actionType)<<','<<actionPower<<std::endl;
     }
+
+    std::ostringstream os;
+    os << static_cast<int>(actionType) << "," << static_cast<int>(actionPower*100.0f);
+    iter->second.SendBytes(os.str());
 }
 
 void EmotivEpocController::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {
@@ -125,6 +128,7 @@ bool EmotivEpocController::startRecordUser(unsigned int userID) {
     strcat(filename,"COG.csv");
     outputCOGfile.open(filename, std::ofstream::trunc);
     outputCOGfile << "TIME,ACTION,POWER\n";
+    EmotivEpocController::userID = userID;
 
     // TURN ON EEG RECORDER
     strcpy(&(filename[filenameLength]),"EEG.csv");
@@ -142,6 +146,7 @@ bool EmotivEpocController::stopRecording(unsigned int userID) {
 
     // TURN OFF COG RECORDER
     outputCOGfile.close();
+    EmotivEpocController::userID = INFINITE;
 
     // TURN OFF EEG RECORDER
     threadedReading = false;

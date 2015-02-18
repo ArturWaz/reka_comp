@@ -144,7 +144,7 @@ bool EmotivEpocEngine::loadUserProfile(unsigned int userID, const char *filename
 }
 
 bool EmotivEpocEngine::saveUserProfile(unsigned int userID, const char *filename) {
-    return EE_LoadUserProfile(userID, filename) == EDK_OK;
+    return EE_SaveUserProfile(userID, filename) == EDK_OK;
 }
 
 void EmotivEpocEngine::userAddedEvent(const unsigned int userID) { std::cout<<"Added users: "<<userID<<std::endl; }

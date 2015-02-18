@@ -12,6 +12,7 @@
 #include "EmotivEpocController.h"
 #include <ostream>
 #include <string>
+#include <vector>
 
 
 
@@ -39,8 +40,8 @@ public:
     int parseCommand(std::string const &);
     void splitCommand(std::string const &, std::vector<std::string> &);
     bool userInputErrors(int);
-
     void showAvailableCommands();
+    unsigned int parseCognitivAction(std::string const &);
 
 };
 

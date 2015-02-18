@@ -38,9 +38,9 @@ public:
     int handleUserInput();
     int parseCommand(std::string const &);
     void splitCommand(std::string const &, std::vector<std::string> &);
+    bool userInputErrors(int);
 
     void showAvailableCommands();
-    void prompt();
 
 };
 

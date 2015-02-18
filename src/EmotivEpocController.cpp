@@ -21,12 +21,12 @@ EmotivEpocController::~EmotivEpocController() {
 }
 
 void EmotivEpocController::userAddedEvent(const unsigned int userID) {
-//    EmotivEpocEngine::userAddedEvent(userID);
+    EmotivEpocEngine::userAddedEvent(userID);
     users.insert(std::pair<unsigned int, User>(userID, User(userID)));
 }
 
 void EmotivEpocController::userRemovedEvent(const unsigned int userID) {
-//    EmotivEpocEngine::userRemovedEvent(userID);
+    EmotivEpocEngine::userRemovedEvent(userID);
     std::map<unsigned int, User>::iterator iter = users.find(userID);
     if (iter == users.end()) return;
     if (iter != users.end()) users.erase(iter);
@@ -106,8 +106,8 @@ bool EmotivEpocController::startRecordUser(unsigned int userID) {
 
 
 
-    char filename[100] = "unnamedUser";
-    unsigned int filenameLength = 11;
+    char filename[100] = "undefinedUsername";
+    unsigned int filenameLength = 17;
     if (iter->second.getName() != NULL) {
         filenameLength = (int)strlen(iter->second.getName());
         memcpy(filename, iter->second.getName(), filenameLength);
@@ -118,7 +118,7 @@ bool EmotivEpocController::startRecordUser(unsigned int userID) {
     struct tm * timeinfo;
     timeinfo = localtime(&rawtime);
     std::strftime(&(filename[filenameLength]),100,"_%Y.%m.%d_%H.%M.%S_",timeinfo); // "_%F_%H-%M-%S"
-    filenameLength = strlen(filename);
+    filenameLength = (unsigned int)strlen(filename);
 
 
     // TURN ON COG RECORDER
@@ -156,4 +156,23 @@ bool EmotivEpocController::setUserName(unsigned int userID, const char *username
     if (iter == users.end()) return false;
     iter->second.setName(username);
     return true;
+}
+
+bool EmotivEpocController::saveUserProfile(unsigned int userID) {
+    std::map<unsigned int, User>::iterator iter = users.find(userID);
+    if (iter == users.end()) return false;
+    if (iter->second.getName() == NULL)
+        EmotivEpocEngine::saveUserProfile(userID,"unnamedUser");
+    else
+        EmotivEpocEngine::saveUserProfile(userID,iter->second.getName());
+    return true;
+}
+
+bool EmotivEpocController::loadUserProfile(unsigned int userID) {
+    std::map<unsigned int, User>::iterator iter = users.find(userID);
+    if (iter == users.end()) return false;
+    if (iter->second.getName() == NULL)
+        return EmotivEpocEngine::loadUserProfile(userID,"unnamedUser");
+    else
+        return EmotivEpocEngine::loadUserProfile(userID,iter->second.getName());
 }

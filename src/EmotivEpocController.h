@@ -59,6 +59,8 @@ public:
 
     unsigned int getUserID(const char*username);
     bool setUserName(unsigned int userID, const char *username);
+    bool saveUserProfile(unsigned int userID);
+    bool loadUserProfile(unsigned int userID);
 
     inline bool isRecording() const { return threadedReading; }
 

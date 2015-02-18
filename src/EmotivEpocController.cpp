@@ -167,17 +167,18 @@ bool EmotivEpocController::saveUserProfile(unsigned int userID) {
     std::map<unsigned int, User>::iterator iter = users.find(userID);
     if (iter == users.end()) return false;
     if (iter->second.getName() == NULL)
-        EmotivEpocEngine::saveUserProfile(userID,"unnamedUser");
-    else
-        EmotivEpocEngine::saveUserProfile(userID,iter->second.getName());
-    return true;
+        return EmotivEpocEngine::saveUserProfile(userID,"unnamedUser.emu");
+    std::string str(iter->second.getName());
+    str += ".emu";
+    return EmotivEpocEngine::saveUserProfile(userID,str.c_str());
 }
 
 bool EmotivEpocController::loadUserProfile(unsigned int userID) {
     std::map<unsigned int, User>::iterator iter = users.find(userID);
     if (iter == users.end()) return false;
     if (iter->second.getName() == NULL)
-        return EmotivEpocEngine::loadUserProfile(userID,"unnamedUser");
-    else
-        return EmotivEpocEngine::loadUserProfile(userID,iter->second.getName());
+        return EmotivEpocEngine::loadUserProfile(userID,"unnamedUser.emu");
+    std::string str(iter->second.getName());
+    str += ".emu";
+    return EmotivEpocEngine::loadUserProfile(userID,str.c_str());
 }

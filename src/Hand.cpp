@@ -60,16 +60,16 @@ void dataSender(Hand *hand){
 //            std::cout << "finger: " << x << ", state: " << y << std::endl;
 
             if (finger != packet[0] && state != packet[1]){
-//                ERROR_COM(hand->portCOM.getPortNumber(), "Bad feedback packet.");
+                ERROR_COM(hand->portCOM.getPortNumber(), "Bad feedback packet.");
                 SLEEP_MS(10);
                 continue;
             }
 
 
-            if (approxTime > hand->turnOffTime){
-                packet[0] = 0x81;
-                packet[1] = 0x81;
-            }
+//            if (approxTime > hand->turnOffTime){
+//                packet[0] = 0x81;
+//                packet[1] = 0x81;
+//            }
 
             approxTime += 100;
             SLEEP_MS(100);
@@ -118,8 +118,7 @@ void Hand::middleClose() { setPacket(1<< MIDDLE_OC, CLOSE); }
 void Hand::thumbOpen() { setPacket(1<< THUMB_OC, OPEN); }
 void Hand::thumbClose() { setPacket(1<< THUMB_OC, CLOSE); }
 
-void Hand::thumbLeft() { setPacket(1<<THUMB_LRM, LEFT); }
-void Hand::thumbRight() { setPacket(1<<THUMB_LRM, RIGHT); }
-void Hand::thumbMid() { setPacket(1<<THUMB_LRM, MIDDLE); }
+void Hand::thumbPWM(uint8_t pwm) { setPacket(1<< THUMB_OC, (pwm<<1)&0x7E); }
 
 void Hand::turnOffMotors() { setPacket(0x81,0x81); }
+

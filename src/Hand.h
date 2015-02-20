@@ -55,9 +55,7 @@ public:
     void thumbOpen();
     void thumbClose();
 
-    void thumbLeft();
-    void thumbRight();
-    void thumbMid();
+    void thumbPWM(uint8_t pwm);
 
 };
 

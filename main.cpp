@@ -28,6 +28,7 @@ int main(){
 bool readControl(Hand&hand){
     char finger, state;
     cin>>finger;
+    unsigned int pwm;
     if (finger == 'q') return false;
     cin>>state;
 
@@ -35,9 +36,10 @@ bool readControl(Hand&hand){
         case 't': // thumb
             if (state == 'o') hand.thumbOpen();
             else if (state == 'c') hand.thumbClose();
-            else if (state == 'm') hand.thumbMid();
-            else if (state == 'l') hand.thumbLeft();
-            else if (state == 'r') hand.thumbRight();
+            break;
+        case 'a':
+            cin>>pwm;
+            hand.thumbPWM(uint8_t(pwm));
             break;
         case 'i': // index
             if (state == 'o') hand.indexOpen();
@@ -65,6 +67,5 @@ bool readControl(Hand&hand){
         default:
             return true;
     }
-    hand.sendData();
     return true;
 }

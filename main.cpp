@@ -26,43 +26,42 @@ int main(){
 }
 
 bool readControl(Hand&hand){
-    char finger, state;
+    char finger;
+    int state;
     cin>>finger;
-    unsigned int pwm;
     if (finger == 'q') return false;
     cin>>state;
 
     switch (finger){
         case 't': // thumb
-            if (state == 'o') hand.thumbOpen();
-            else if (state == 'c') hand.thumbClose();
+            if (state == 1) hand.thumbOpen();
+            else if (state == 2) hand.thumbClose();
             break;
         case 'a':
-            cin>>pwm;
-            hand.thumbPWM(uint8_t(pwm));
+            hand.thumbPWM(uint8_t(state));
             break;
         case 'i': // index
-            if (state == 'o') hand.indexOpen();
-            else if (state == 'c') hand.indexClose();
+            if (state == 1) hand.indexOpen();
+            else if (state == 2) hand.indexClose();
             break;
         case 'm': // middle
-            if (state == 'o') hand.middleOpen();
-            else if (state == 'c') hand.middleClose();
+            if (state == 1) hand.middleOpen();
+            else if (state == 2) hand.middleClose();
             break;
         case 'r': // ring
-            if (state == 'o') hand.ringOpen();
-            else if (state == 'c') hand.ringClose();
+            if (state == 1) hand.ringOpen();
+            else if (state == 2) hand.ringClose();
             break;
         case 'p': // pinky
-            if (state == 'o') hand.pinkyOpen();
-            else if (state == 'c') hand.pinkyClose();
+            if (state == 1) hand.pinkyOpen();
+            else if (state == 2) hand.pinkyClose();
             break;
         case 'h':
-            if (state == 'o') hand.openHand();
-            else if(state == 'c') hand.closeHand();
+            if (state == 1) hand.openHand();
+            else if(state == 2) hand.closeHand();
             break;
         case 'T':
-            if (state == 'o') hand.turnOffMotors();
+            if (state == 2) hand.turnOffMotors();
             break;
         default:
             return true;

@@ -60,16 +60,16 @@ void dataSender(Hand *hand){
 //            std::cout << "finger: " << x << ", state: " << y << std::endl;
 
             if (finger != packet[0] && state != packet[1]){
-                ERROR_COM(hand->portCOM.getPortNumber(), "Bad feedback packet.");
+//                ERROR_COM(hand->portCOM.getPortNumber(), "Bad feedback packet.");
                 SLEEP_MS(10);
                 continue;
             }
 
 
-//            if (approxTime > hand->turnOffTime){
-//                packet[0] = 0x81;
-//                packet[1] = 0x81;
-//            }
+            if (approxTime > hand->turnOffTime){
+                packet[0] = 0x81;
+                packet[1] = 0x81;
+            }
 
             approxTime += 100;
             SLEEP_MS(100);

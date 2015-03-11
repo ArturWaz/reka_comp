@@ -225,7 +225,7 @@ int ProsthesisConsoleApplication::parseCommand(std::string const &command) {
     if (strings[0] == "exit" || strings[0] == "quit"){
         return -1;
     }
-    if (strings[0] == "help"){
+    if (strings[0] == "help" || strings[0] == "h"){
         showAvailableCommands();
         return 0;
     }

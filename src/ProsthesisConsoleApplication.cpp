@@ -248,7 +248,7 @@ int ProsthesisConsoleApplication::parseCommand(std::string const &command) {
         try { userID = std::stoul(strings.at(1),nullptr); } catch(const std::invalid_argument& oor) { return 2; }
         unsigned long actions = parseCognitivAction(strings[2]);
         if (actions == 0) return 3;
-        if (!setCognitivActions(userID,actions)) return 3;
+        if (!setCurrentAction(userID,EpocCognitivAction(actions))) return 3;
         return 0;
     }
     if (strings[0] == CONSOLE_APP_COMMAND_trainingStart || strings[0] == CONSOLE_APP_COMMAND_trainingStart_short){

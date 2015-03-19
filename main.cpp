@@ -11,11 +11,8 @@
 #include <map>
 #include <string>
 #include <sstream>
-#include <DefineFunctions.h>
 #include <EmotivEpocController.h>
 #include <ProsthesisConsoleApplication.h>
-#include "EmotivEpocEngine.h"
-#include "Hand.h"
 
 using namespace std;
 

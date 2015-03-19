@@ -9,7 +9,6 @@
 #define HAND_H_
 
 #include <mutex>
-#include <thread>
 #include "PortCOM.h"
 
 class Hand {
@@ -56,9 +55,7 @@ public:
     void thumbOpen();
     void thumbClose();
 
-    void thumbLeft();
-    void thumbRight();
-    void thumbMid();
+    void thumbPWM(uint8_t pwm);
 
 };
 

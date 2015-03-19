@@ -48,13 +48,17 @@
 
 
 
+ProsthesisConsoleApplication::ProsthesisConsoleApplication(): EmotivEpocController(2.0f), out(std::cout), hand(nullptr), userPrompt("command: ") {}
 
-ProsthesisConsoleApplication::ProsthesisConsoleApplication(): EmotivEpocController(2.0f), out(std::cout), userPrompt("command: ") {
-
+ProsthesisConsoleApplication::ProsthesisConsoleApplication(int portNr): EmotivEpocController(2.0f), out(std::cout), hand(nullptr), userPrompt("command: ") {
+    if (portNr >= 0) {
+        hand = new Hand(portNr, 10000);
+        hand->continuousDataTransmitter();
+    }
 }
 
 ProsthesisConsoleApplication::~ProsthesisConsoleApplication() {
-
+    if (hand != nullptr) delete hand;
 }
 
 int ProsthesisConsoleApplication::applicationStart() {
@@ -88,6 +92,7 @@ void ProsthesisConsoleApplication::userRemovedEvent(const unsigned int userID) {
 void ProsthesisConsoleApplication::cognitivActionEvent(const unsigned int userID, EpocCognitivAction actionType, float actionPower, float time) {
     EmotivEpocController::cognitivActionEvent(userID, actionType, actionPower, time);
     // todo prosthesis control
+
 }
 
 void ProsthesisConsoleApplication::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {

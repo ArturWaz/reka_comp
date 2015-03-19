@@ -118,8 +118,7 @@ void Hand::middleClose() { setPacket(1<< MIDDLE_OC, CLOSE); }
 void Hand::thumbOpen() { setPacket(1<< THUMB_OC, OPEN); }
 void Hand::thumbClose() { setPacket(1<< THUMB_OC, CLOSE); }
 
-void Hand::thumbLeft() { setPacket(1<<THUMB_LRM, LEFT); }
-void Hand::thumbRight() { setPacket(1<<THUMB_LRM, RIGHT); }
-void Hand::thumbMid() { setPacket(1<<THUMB_LRM, MIDDLE); }
+void Hand::thumbPWM(uint8_t pwm) { setPacket(1<< THUMB_LRM, uint8_t((pwm<<1)&0x7E)); }
 
 void Hand::turnOffMotors() { setPacket(0x81,0x81); }
+

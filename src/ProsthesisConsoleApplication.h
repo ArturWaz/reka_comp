@@ -13,14 +13,17 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include "Hand.h"
 
 
 
 
 class ProsthesisConsoleApplication: private EmotivEpocController {
+
     std::ostream &out;
     std::string inputBuffer;
     char const *userPrompt;
+    Hand *hand;
 
     virtual void userAddedEvent(const unsigned int userID);
     virtual void userRemovedEvent(const unsigned int userID);
@@ -30,6 +33,7 @@ class ProsthesisConsoleApplication: private EmotivEpocController {
 public:
 
     ProsthesisConsoleApplication();
+    ProsthesisConsoleApplication(int portNr);
     ~ProsthesisConsoleApplication();
 
 

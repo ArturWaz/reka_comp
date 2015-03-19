@@ -92,7 +92,10 @@ void ProsthesisConsoleApplication::userRemovedEvent(const unsigned int userID) {
 void ProsthesisConsoleApplication::cognitivActionEvent(const unsigned int userID, EpocCognitivAction actionType, float actionPower, float time) {
     EmotivEpocController::cognitivActionEvent(userID, actionType, actionPower, time);
     // todo prosthesis control
-
+    if (hand != nullptr) {
+        if (actionType == ACTION_PUSH && actionPower > 0.1) hand->openHand();
+        if (actionType == ACTION_PULL && actionPower > 0.1) hand->closeHand();
+    }
 }
 
 void ProsthesisConsoleApplication::cognitivControllerEvent(const unsigned int userID, EpocCognitivEvent eventType) {
